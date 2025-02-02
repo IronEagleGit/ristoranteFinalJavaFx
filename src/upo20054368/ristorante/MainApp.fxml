@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="upo20054368.ristorante.App">
+   <children>
+      <Label prefHeight="74.0" prefWidth="341.0" text="Ristorante Simulator" textAlignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+      <Pane layoutY="74.0" prefHeight="528.0" prefWidth="800.0" style="-fx-background-color: orange;">
+         <children>
+            <SplitMenuButton fx:id="optionsButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="143.0" text="Cosa vuoi fare?" textAlignment="CENTER" />
+            <AnchorPane fx:id="screen" layoutX="167.0" layoutY="12.0" prefHeight="509.0" prefWidth="627.0" />
+         </children>
+      </Pane>
+      <Label fx:id="saveTitle" layoutX="345.0" prefHeight="74.0" prefWidth="449.0" textAlignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
