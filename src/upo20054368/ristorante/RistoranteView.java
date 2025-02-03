@@ -1,5 +1,16 @@
 package upo20054368.ristorante;// Dario Stilo 20054368 ed Edoardo Scamuzzi 20054488
 
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
@@ -19,34 +30,79 @@ public class RistoranteView {
 
 
 
-    public void stampaListaClientiView(List<Cliente> listaClientiInput)
+
+
+    public List<String> listClienteToListString(List<Cliente> lista)
     {
-
-        int lenghtClienti = listaClientiInput.size();
-        int i =0;
-        System.out.println("Clienti trovati:");
-        System.out.println();
-        System.out.println("Id--Anno Nascita--Giorno registrazione--Età");
-        System.out.println();
-
+        List<String>list = new ArrayList<>();
+        list.add(lista.getFirst().toString());
+        int i=1;
+        int lenghtClienti = lista.size();
         while(i<lenghtClienti)
         {
-            Cliente c = listaClientiInput.get(i);
-            System.out.println(c.toString()+"--"+calcolaEta(c.getAnnoNascita()));
-            System.out.println();
+            list.add(lista.get(i).toString());
             i++;
         }
+        return list;
+    }
+
+    public void stampaListaClientiView(List<Cliente> listaClientiInput, Stage stage, Scene backscene)
+    {
+        Button back = new Button("Back");
+        if(!listaClientiInput.isEmpty())
+        {
+            List<String> clienti= listClienteToListString(listaClientiInput);
+            String stringaCompleta=clienti.getFirst();
+            int i=1;
+            int lenghtClienti = listaClientiInput.size();
+            while(i<lenghtClienti)
+            {
+                stringaCompleta = String.join("\n",clienti.get(i));
+                i++;
+            }
+            Label outputClienti = new Label();
+            System.out.println(stringaCompleta);
+            outputClienti.setText(stringaCompleta);
+
+            VBox box = new VBox(outputClienti, back);
+            box.setSpacing(10);
+            Scene scene = new Scene(box,400,900);
+            stage.setScene(scene);
+
+
+
+
+        }else {
+            printBooleanResultView(false, stage, backscene);
+        }
+        back.setOnAction(e->{
+
+            stage.setScene(backscene);
+        });
+
 
 
 
     }
 
-    public void stampaClienteSingoloView(Cliente cliente)
+    public void stampaClienteSingoloView(Cliente cliente,Stage stage, Scene backscene)
     {
-        System.out.println("Id--Anno Nascita--Giorno registrazione--Età");
-        System.out.println();
+        VBox box = new VBox();
+        box.setSpacing(10);
+        Label label = new Label();
+        Button back = new Button("Back");
+        box.getChildren().addAll(label,back);
+        Scene scene = new Scene(box,400,100);
+        label.setText(cliente.toString()+"--"+calcolaEta(cliente.getAnnoNascita()));
+        stage.setScene(scene);
+        stage.show();
 
-        System.out.println(cliente.toString()+"--"+calcolaEta(cliente.getAnnoNascita()));
+        back.setOnAction(e -> {
+            stage.setScene(backscene);
+
+
+
+        });
     }
 
     public void statisticheNumeroPiattiView(int max, int min, float media)
@@ -72,30 +128,33 @@ public class RistoranteView {
         System.out.println();
     }
 
-    public void printBooleanResultView(boolean check)
+    public void printBooleanResultView(boolean check, Stage stage, Scene backscene)
     {
-        if(check) System.out.println("Operazione Completata");
-        else System.out.println("Operazione Fallita");
+        Label label = new Label();
+        Button back = new Button("Back");
+        VBox booleanResult= new VBox(label,back);
+        booleanResult.setSpacing(10);
+        Scene scene = new Scene(booleanResult,200,150);
+        if(check) label.setText("Operazione completata");
+        else label.setText("Operazione non completata");
 
-        System.out.println();
-        System.out.println();
+
+
+        stage.setScene(scene);
+
+        back.setOnAction(e->{
+
+            stage.setScene(backscene);
+
+
+        });
+
+
     }
 
 
 
-    public String inserisciIdView()
-    {
-        String identif=null;
 
-
-        //inserimento da tastiera dell'identificativo;
-        System.out.println("Inserisci l'identificativo del nuovo cliente, altrimenti premi invio per generarne uno casuale.");
-        identif = input.nextLine();
-        System.out.println();
-
-
-        return identif;
-    }
 
     public int inserisciAnnoNascitaView()
     {

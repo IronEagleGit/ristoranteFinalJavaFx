@@ -39,7 +39,7 @@ public class Ristorante implements Serializable {
 
 
         int i=0;
-
+        if (listaClienti.isEmpty()) return null;
         while(listaClienti.get(i).getId().compareTo(iden)!=0&&i<numRecord)
         {
             i=i+1;
@@ -174,7 +174,7 @@ public class Ristorante implements Serializable {
         int somma=0;
         int max=0;
         int min=0;
-        int media=0;
+
         try{
             Cliente c=listaClienti.getFirst();
 

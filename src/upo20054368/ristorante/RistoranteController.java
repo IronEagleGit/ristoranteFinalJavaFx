@@ -1,6 +1,14 @@
 package upo20054368.ristorante;// Dario Stilo 20054368 ed Edoardo Scamuzzi 20054488
 
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -22,55 +30,130 @@ public class RistoranteController {
     RistoranteView view= new RistoranteView();
 
 
-    public RistoranteController(AtomicReference<Ristorante> model, RistoranteView view) {
+    public RistoranteController(Ristorante model, RistoranteView view) {
         this.model=model;
         this.view=view;
     }
 
 
+    public void inserisciClienteController(Stage stage1, Scene backscene) {
 
-    public void inserisciClienteController()
-    {
+        TextField ggRegistrazioneInsCli= new TextField();
+        ggRegistrazioneInsCli.setPromptText("dd/mm/yyyy");
+        TextField inserisciAnnoNascita = new TextField();
+        inserisciAnnoNascita.setPromptText("Anno nascita cliente (int)");
+        TextField inserisciIdCliente = new TextField();
+        inserisciIdCliente.setPromptText("Id cliente");
+        Button okInserisciCliente = new Button("Save");
+        Button back = new Button("Back");
+        VBox box = new VBox();
+        box.setSpacing(10);
+        box.getChildren().addAll(inserisciIdCliente,inserisciAnnoNascita,ggRegistrazioneInsCli,okInserisciCliente,back);
 
-        String identif = view.inserisciIdView();
-        int annoNasInser=0;
-        try{
-            annoNasInser = view.inserisciAnnoNascitaView();
-        }catch(InputMismatchException e){System.out.println("Il tipo dell'input non è int.");}
+        Scene scene = new Scene(box,400,300);
+        stage1.setScene(scene);
+        stage1.show();
 
-        LocalDate giornoReg=LocalDate.of(0,1,1);//default date
-        try{
 
-            giornoReg = view.inserisciGiornoRegView();
+        okInserisciCliente.setOnAction(e -> {
+            LocalDate date=LocalDate.now();
+            int anno =0;
+            String identif = "";
+            boolean check = false;
+            try
+            {
+                DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("d/M/yyyy");
+                date = LocalDate.parse(ggRegistrazioneInsCli.getText(),dateFormat);
+                anno = Integer.parseInt(inserisciAnnoNascita.getText());
+                identif=inserisciIdCliente.getText();
+                if(!identif.isEmpty())
+                {
+                    check=model.inserisciClienteModel(identif, anno, date );
+                }else check =model.inserisciClienteModel(anno, date );
 
-        }catch(DateTimeParseException e){System.out.println("Errore nel parsing della data in input.");}
+            }catch(DateTimeParseException | InputMismatchException dtpe){System.out.println(dtpe);}
 
-        boolean check;
-        if(!identif.isEmpty()) {
-            check = model.inserisciClienteModel(identif, annoNasInser, giornoReg);
-        }else check= model.inserisciClienteModel(annoNasInser, giornoReg);
 
-        view.printBooleanResultView(check);
+            view.printBooleanResultView(check, stage1,backscene);
+
+
+        });
+
+        back.setOnAction(e->{
+
+            stage1.setScene(backscene);
+
+
+        });
+
 
     }
 
 
-    public void ricercaClienteController()
+
+    public void ricercaClienteController(Stage stage, Scene backscene)
     {
-        String iden = view.ricercaClienteView();
-        Cliente clienteOutput = model.ricercaClienteModel(iden);
-        view.stampaClienteSingoloView(clienteOutput);
+        VBox box = new VBox();
+        box.setSpacing(10);
+        TextField inserisciIdCliente = new TextField();
+        inserisciIdCliente.setPromptText("Id cliente");
+        Button okCercaCliente = new Button("Cerca");
+        Button back = new Button("Back");
+        box.getChildren().addAll(inserisciIdCliente,okCercaCliente,back);
+        Scene scene = new Scene(box,400,300);
+
+        stage.setScene(scene);
+        stage.show();
+
+
+
+
+        okCercaCliente.setOnAction(e -> {
+            String identif=inserisciIdCliente.getText();
+            Cliente clienteOutput = model.ricercaClienteModel(identif);
+            if(clienteOutput!=null) view.stampaClienteSingoloView(clienteOutput, stage,backscene);
+            else view.printBooleanResultView(false, stage,backscene);
+        });
+        back.setOnAction(e->{
+            stage.setScene(backscene);
+
+        });
 
     }
 
-    public void ricercaEtaClienteController()
+    public void ricercaEtaClienteController(Stage stage, Scene backscene)
     {
-        int[] dateInput = view.ricercaEtaClienteView();
-        List<Cliente> listaOut=new ArrayList<>();
-        if(dateInput[0]!=0&&dateInput[1]!=0) {
-            listaOut= model.ricercaEtaClienteModel(dateInput[0], dateInput[1]);
-        }
-        view.stampaListaClientiView(listaOut);
+        VBox box = new VBox();
+        box.setSpacing(10);
+        TextField inserisciEtaMin = new TextField();
+        inserisciEtaMin.setPromptText("Eta Min");
+        TextField inserisciEtaMax = new TextField();
+        inserisciEtaMax.setPromptText("Eta Max");
+        Button okDateInput = new Button("Ok");
+        Button back = new Button("Back");
+        box.getChildren().addAll(inserisciEtaMin,inserisciEtaMax,okDateInput,back);
+        Scene scene = new Scene(box, 400,300);
+        stage.setScene(scene);
+
+        okDateInput.setOnAction(e -> {
+
+            int datMin=0;
+            int datMax=0;
+            List<Cliente> listaOut=new ArrayList<>();
+            try{
+                datMin =Integer.parseInt(inserisciEtaMin.getText());
+                datMax = Integer.parseInt(inserisciEtaMax.getText());
+                listaOut= model.ricercaEtaClienteModel(datMin, datMax);
+            }catch(DateTimeParseException | NumberFormatException ricClientEta){System.out.println(ricClientEta);}
+
+            view.stampaListaClientiView(listaOut, stage,backscene);
+
+        });
+        back.setOnAction(e->{
+            stage.setScene(backscene);
+
+        });
+
     }
 
     public void aggiungiUnOrdineController()
@@ -90,7 +173,7 @@ public class RistoranteController {
             check= model.aggiungiUnOrdineModel(iden, dataOut,arr[0], arr[1]);
         }catch(IllegalArgumentException e){System.out.println("Errore nell'inserimento dei dati in input.");}
 
-        view.printBooleanResultView(check);
+        //view.printBooleanResultView(check,stage);
 
 
     }

@@ -6,13 +6,17 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
 
+
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
 /**
  * Classe di esecuzione della simulazione del ristorante.
  * @version 31.01.2025
@@ -23,19 +27,27 @@ import javafx.stage.Stage;
 
 public class App extends Application {
 
+
     @FXML
-    public SplitMenuButton optionsButton;
+    public Label saveNameLabel;
+    @FXML
+    public Button aggiungiCliente;
+    @FXML
+    public Button cercaCLienteDaId;
+    @FXML
+    public Button cercaClientiDaTimeFrame;
     @FXML
     TextField saveFileInput;
     @FXML
     Button loadSaveButton;
 
     @Override
-    public void start(Stage primary_stage) {
+    public void start(Stage popupStage) {
         AtomicReference<Ristorante> rModel = new AtomicReference<>(new Ristorante());
         AnchorPane popupSaveInput;
-        Stage popupStage = new Stage();
+        popupStage = new Stage();
 
+        //loading save file
         try {
 
             FXMLLoader loaderSave = new FXMLLoader(getClass().getResource("LoadSave.fxml"));
@@ -58,6 +70,7 @@ public class App extends Application {
 
            rModel.set(gestioneAperturaSalvataggio(saveFileInput.getText()));
            Stage s= (Stage) loadSaveButton.getScene().getWindow();
+           menu(rModel.get());
            s.close();
 
 
@@ -65,25 +78,25 @@ public class App extends Application {
 
         //ottenimento ristorante completato
 
+    }
+
+    public void menu(Ristorante rModel)
+    {
 
 
 
 
-        //splitbutton options
-        Menu menu = new Menu("Opzioni ristorante");
-        MenuItem opzione1 = new MenuItem("Aggiungi un cliente");
-
-
-
-        //inizializziamo la scena e creiamo view e controller
+        Stage primary_stage = new Stage();
         RistoranteView rView = new RistoranteView();
         RistoranteController rController = new RistoranteController(rModel, rView);
+        Scene scene;
+        AnchorPane mainMenu = new AnchorPane();
         try {
 
 
             FXMLLoader loader0 = new FXMLLoader(getClass().getResource("MainApp.fxml"));
-            AnchorPane mainMenu = loader0.load();
-            Scene scene = new Scene(mainMenu, 800, 600);
+            mainMenu = loader0.load();
+            scene = new Scene(mainMenu, 400, 300);
 
             AnchorPane.setTopAnchor(mainMenu, 0.0);
             AnchorPane.setBottomAnchor(mainMenu, 0.0);
@@ -99,19 +112,10 @@ public class App extends Application {
 
 
             App app = loader0.getController();
-            optionsButton=app.optionsButton;
 
-            optionsButton.setText("Cosa Vuoi fare?");
-
-            optionsButton.setOnAction(e->
-            {
-
-            });
-
-
-
-
-
+            aggiungiCliente=app.aggiungiCliente;
+            cercaCLienteDaId=app.cercaCLienteDaId;
+            cercaClientiDaTimeFrame =app.cercaClientiDaTimeFrame;
 
 
 
@@ -120,56 +124,29 @@ public class App extends Application {
             throw new RuntimeException(e);
         }
 
-        opzione1.setOnAction(e->{
-            rController.inserisciClienteController();
+
+        aggiungiCliente.setOnAction(e->{
+            rController.inserisciClienteController(primary_stage, scene);
+
+        });
+        cercaCLienteDaId.setOnAction(e->{
+
+            rController.ricercaClienteController(primary_stage,scene);
+
+        });
+        cercaClientiDaTimeFrame.setOnAction(e->{
+
+           rController.ricercaEtaClienteController(primary_stage,scene);
 
         });
 
 
-
-
     }
 
 
 
-/*
-    public void startingMethod()
-    {
-        Scanner input = new Scanner(System.in);
-        String fileName="";
-
-        //fileName=inputFile(input);
-
-        //Ristorante rModel =gestioneAperturaSalvataggio(fileName);
 
 
-
-        int scelta=0;
-
-        while(scelta!=100)
-        {
-
-            menuApp();
-
-            try{
-                scelta=input.nextInt();
-
-                esegui(scelta, rModel, rController, fileName);
-            }catch (InputMismatchException e){System.out.println("Errore nell'input di scelta");input.nextLine();}
-
-
-        }
-
-
-    }*/
-
-    static String inputFile(Scanner input)
-    {
-
-        System.out.println("Inserire il nome del salvataggio in input, o premere invio per creare un nuovo ristorante.");
-
-        return input.nextLine();
-    }
     public static void menuApp()
     {
         System.out.println("Cosa vuoi fare?\nDigita il numero relativo all'opzione scelta");
@@ -215,15 +192,15 @@ public class App extends Application {
         switch (scelta){
 
             case 1:
-                rController.inserisciClienteController();
+                //rController.inserisciClienteController();
 
                 break;
             case 2:
-                rController.ricercaClienteController();
+                //rController.ricercaClienteController();
 
                 break;
             case 3:
-                rController.ricercaEtaClienteController();
+                //rController.ricercaEtaClienteController();
 
                 break;
             case 4:
